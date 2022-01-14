@@ -20,13 +20,13 @@ def cadastro(request):
         if len(username.strip()) == 0 or len(email.strip()) == 0 or len(senha.strip()) == 0:
             messages.add_message(request, constants.ERROR,
                                  'Preencha todos os campos')
-            return redirect('/cadastro')
+            return redirect('/auth/cadastro')
 
         user = User.objects.filter(username=username)
         if user.exists():
             messages.add_message(request, constants.ERROR,
                                  'Já existe um usuário com esse nome cadastrado')
-            return redirect('/cadastro')
+            return redirect('/auth/cadastro')
 
         try:
             user = User.objects.create_user(
@@ -34,11 +34,11 @@ def cadastro(request):
             user.save()
             messages.add_message(request, constants.SUCCESS,
                                  'Cadastro realizado com sucesso')
-            return redirect('/logar')
+            return redirect('/auth/logar')
         except:
             messages.add_message(request, constants.ERROR,
                                  'Erro interno do sistema')
-            return redirect('/cadastro')
+            return redirect('/auth/cadastro')
 
 
 def logar(request):
@@ -55,7 +55,12 @@ def logar(request):
         if not usuario:
             messages.add_message(request, constants.ERROR,
                                  'Usuário ou senha inválidos')
-            return redirect('/logar')
+            return redirect('/auth/logar')
         else:
             auth.login(request, usuario)
             return redirect('/')
+
+
+def sair(request):
+    auth.logout(request)
+    return redirect('/auth/logar')
